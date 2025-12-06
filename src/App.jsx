@@ -44,9 +44,13 @@ function App() {
       } else {
         let newPlayer = currentPlayer == playero ? playerx : playero;
         setCurrentPlayer(newPlayer);
-        setGameStatus(`Your move, ${currentPlayer.getName()}!`);
+        setGameStatus(`Your move, ${newPlayer.getName()}!`);
       }
     }
+  }
+
+  function handleClearBoard() {
+    setBoard(makeBoard());
   }
 
   return (
@@ -88,6 +92,7 @@ function App() {
             ))
           })}
         </div>
+        <button type="button" onClick={handleClearBoard}>Clear Board</button>
       </article>
       <footer>
         &copy; Micheal McErlean 2025.

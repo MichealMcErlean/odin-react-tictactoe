@@ -50,6 +50,12 @@ article {
   font-size: 7.2rem;
 }
 
+.board button {
+  border: none;
+  background-color:antiquewhite;
+  font-size: 7.2rem;
+}
+
 footer {
   grid-area: footer;
   background-color:#222222;
