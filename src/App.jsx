@@ -1,34 +1,98 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { cloneElement, useState } from 'react'
 import './App.css'
+import { CheckForTie, makeBoard, checkForWin } from './scripts/gameboard'
+import { Player } from './scripts/player'
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [board, setBoard] = useState(makeBoard());
+  const [playero, setPlayero] = useState(new Player('o'));
+  const [playerx, setPlayerx] = useState(new Player('x'));
+  const [currentPlayer, setCurrentPlayer] = useState(playerx);
+  const [gameStatus, setGameStatus] = useState(`Your move, ${currentPlayer.getName()}!`);
+
+  function handlePlayerOName(e) {
+    let newName = document.getElementById('playeronameText').value;
+    let newPlayer = new Player('o');
+    newPlayer.setName(newName);
+    setPlayero(newPlayer);
+  }
+
+  function handlePlayerXName(e) {
+    let newName = document.getElementById('playerxnameText').value;
+    let newPlayer = new Player('x');
+    newPlayer.setName(newName);
+    setPlayerx(newPlayer);
+  }
+
+  function handleMove(e, iRow, iCol) {
+    const newBoard = [...board];
+    const newRow = [...newBoard[iRow]];
+    newRow[iCol] = currentPlayer.getToken();
+    newBoard[iRow] = newRow;
+    setBoard(newBoard);
+
+    const isWinner = checkForWin(newBoard, currentPlayer);
+
+    if (isWinner) {
+      setGameStatus(`Victory to ${currentPlayer.getName()}!`)
+
+    } else {
+      const isTie = CheckForTie(newBoard);
+      if (isTie) {
+        setGameStatus('Drawn game! As it should be!')
+      } else {
+        let newPlayer = currentPlayer == playero ? playerx : playero;
+        setCurrentPlayer(newPlayer);
+        setGameStatus(`Your move, ${currentPlayer.getName()}!`);
+      }
+    }
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <main>
+      <header>
+        <h1>Tic-Tac-Toe</h1>
+        <h2>An Odin Project exercise</h2>
+        <h3>Powered by React</h3>
+      </header>
+      <aside>
+        <label htmlFor="playeroname">{playero.getName()}</label>
+        <input 
+          type="text" 
+          name="playeroname" 
+          id="playeronameText"
+        />
+        <button type="button" onClick={handlePlayerOName}>Change Name</button>
+        <hr />
+        <label htmlFor="playerxname">{playerx.getName()}</label>
+        <input 
+          type="text" 
+          name="playerxname"
+          id="playerxnameText"
+          onChange={handlePlayerXName}
+        />
+        <button type="button" onClick={handlePlayerXName}>Change Name</button>
+      </aside>
+      <article>
+        <h2>{gameStatus}</h2>
+        <div className="board">
+          {board.map((row, iRow) => {
+            return row.map((cloneElement, iCol) => (
+              <button 
+                type="button"
+                onClick={board[iRow][iCol] == '-' ? (e) => handleMove(e, iRow, iCol) : undefined}
+              >
+                {board[iRow][iCol]}
+              </button>
+            ))
+          })}
+        </div>
+      </article>
+      <footer>
+        &copy; Micheal McErlean 2025.
+      </footer>
+    </main>
   )
 }
 
